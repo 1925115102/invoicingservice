@@ -1,6 +1,8 @@
 package edu.iu.c322.invoicingservice.repository;
 
+import edu.iu.c322.invoicingservice.model.Item;
 import edu.iu.c322.invoicingservice.model.Order;
+import edu.iu.c322.invoicingservice.model.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -16,18 +18,20 @@ public class InvoicingRepository {
                 return order;
             }
         }
-        throw new IllegalStateException("customer id is not valid.");
+        throw new IllegalStateException("order with this id does not exist in the system.");
     }
 
-    public void update(Order order, int id){
-        Order x = getOrderById(id);
+    public void update(Update update, int id){
+        Order x = findById(id);
         if (x != null){
-            x.setTotal(order.getTotal());
-            x.setItems(order.getItems());
-            x.setPayment(order.getPayment());
-            x.setShippingAddress(order.getShippingAddress());
+            for (Item item : x.getItems()) {
+                if (item.getId() == update.getItemId()) {
+                    item.setStatus(update.getStatus());
+                    return;
+                }
+            }
         } else {
-            throw new IllegalStateException("customer id is not valid.");
+            throw new IllegalStateException("order with this id does not exist in the system");
         }
     }
 

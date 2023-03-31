@@ -1,12 +1,13 @@
 package edu.iu.c322.invoicingservice.controller;
 
 import edu.iu.c322.invoicingservice.model.Order;
+import edu.iu.c322.invoicingservice.model.Update;
 import edu.iu.c322.invoicingservice.repository.InvoicingRepository;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/invoices")
 public class InvoicingController {
     private InvoicingRepository repository;
 
@@ -23,8 +24,8 @@ public class InvoicingController {
 
     // PUT localhost:8080/order/2
     @PutMapping("/{id}")
-    public void update(@Valid @RequestBody Order order, @PathVariable int id){
-        repository.update(order, id);
+    public void update(@Valid @RequestBody Update update, @PathVariable int id){
+        repository.update(update, id);
     }
 
 }
