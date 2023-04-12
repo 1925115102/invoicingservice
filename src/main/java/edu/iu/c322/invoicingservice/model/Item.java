@@ -7,5 +7,6 @@ import java.util.Objects;
 public record Item(int id,
                         String name,
                         int quantity,
-                        float price) {
+                        float price,
+                        String status) {
 }
