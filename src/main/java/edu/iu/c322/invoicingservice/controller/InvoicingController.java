@@ -1,31 +1,30 @@
 package edu.iu.c322.invoicingservice.controller;
 
 import edu.iu.c322.invoicingservice.model.Order;
-import edu.iu.c322.invoicingservice.model.Update;
-import edu.iu.c322.invoicingservice.repository.InvoicingRepository;
-import jakarta.validation.Valid;
+import edu.iu.c322.invoicingservice.model.Invoice;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
 @RequestMapping("/invoices")
 public class InvoicingController {
-    private InvoicingRepository repository;
 
-    public InvoicingController(InvoicingRepository repository) {
-        this.repository = repository;
-    }
+    private final WebClient orderService;
 
-    // Get localhost:8080/orders
-    @GetMapping("/{id}")
-    public Order findById(@PathVariable int id){
-        return repository.findById(id);
+    public InvoicingController(WebClient.Builder webClientBuilder) {
+        orderService = webClientBuilder.baseUrl("http://localhost:8083").build();
     }
 
 
-    // PUT localhost:8080/order/2
-    @PutMapping("/{id}")
-    public void update(@Valid @RequestBody Update update, @PathVariable int id){
-        repository.update(update, id);
+    @GetMapping("/{orderId}")
+    public Invoice findByOrderId(@PathVariable int orderId) {
+        Order order = orderService.get().uri("/orders/order/{orderId}", orderId)
+                .retrieve()
+                .bodyToMono(Order.class).block();
+        Invoice invoice = new Invoice();
+        invoice.setTotal(order.total());
+        invoice.setPayment(order.payment());
+        // add the rest of the data items
+        return invoice;
     }
-
 }
